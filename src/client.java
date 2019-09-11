@@ -9,15 +9,15 @@ public class client {
 		
 		try {
 			//Open a socket at port 8000
-			mySocket = new Socket("am3258@MehtaXPS-13", 8000);
-			//outputStream = new DataOutputStream(mySocket.getOutputStream());
-			//inputStream = new DataInputStream(mySocket.getInputStream());
+			mySocket = new Socket("localhost", 8000); //TODO error here, throws to unknownHostException
+			outputStream = new DataOutputStream(mySocket.getOutputStream());
+			inputStream = new DataInputStream(mySocket.getInputStream());
 		}
 		catch (UnknownHostException e) {
-			System.err.println("Don't know about host: hostname");
+			System.err.println("Don't know about host: localhost");
 		}
 		catch (IOException e) {
-			System.err.println("Couldn't get I/O for the connection: hostname");
+			System.err.println("Couldn't get I/O for the connection: localhost");
 		}
 		if(mySocket != null && outputStream != null && inputStream != null) {
 			//try {
