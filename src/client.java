@@ -1,4 +1,5 @@
-import java.net.*; 
+import java.nio.file.*;
+import java.net.*;
 import java.io.*; 
 import java.util.Scanner;
   
@@ -62,13 +63,30 @@ public class client
             System.out.println(i); 
         } 
     } 
+    
+    public static String readFileAsString(String filename) throws Exception {
+		String data = "";
+		data = new String (Files.readAllBytes(Paths.get(filename)));
+		return data;
+	}
   
-    public static void main(String args[]) 
-    { 
+    public static void main(String args[]) { 
     	Scanner input = new Scanner(System.in);
     	System.out.print("What is the filename of the textfile? ");
     	String filename = input.next();
-    	System.out.println(filename);
+    	
+    	//Test if that file exists
+    	try {
+    		String output = readFileAsString(filename);
+    		
+    		System.out.println(output); //TODO use something 
+    	}
+    	catch (Exception e) {
+    		System.err.println("That filename does not exist. exiting");
+    		System.exit(1);
+    	}
+    	
+    	
         //client client = new client("127.0.0.1", 5000); 
     } 
 } 
