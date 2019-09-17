@@ -6,7 +6,8 @@ public class Server
     //initialize socket and input stream 
     private Socket          socket   = null; 
     private ServerSocket    server   = null; 
-    private DataInputStream in       =  null; 
+    private DataInputStream in       = null; 
+    private DataOutputStream out     = null;
   
     // constructor with port 
     public Server(int port) 
@@ -34,7 +35,8 @@ public class Server
                 try
                 { 
                     line = in.readUTF(); 
-                    System.out.println(line); 
+                    System.out.println(line); //TODO change to write to a file
+                    out.writeUTF(line.toUpperCase());
   
                 } 
                 catch(IOException i) 

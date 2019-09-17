@@ -1,3 +1,9 @@
+/*******************
+ * Andrew Mehta    *
+ * am3258          *
+ *                 *
+ *******************/
+
 import java.nio.file.*;
 import java.net.*;
 import java.io.*;
@@ -11,9 +17,11 @@ public class client
     private Socket socket            = null; 
     private DataInputStream  input   = null; 
     private DataOutputStream out     = null; 
+    private String message           = "";
+    private Boolean END              = false;
   
     // constructor to put ip address and port 
-    public client(String address, int port) 
+    public client(String address, int port, String filename) 
     { 
         // establish a connection 
         try
@@ -21,36 +29,59 @@ public class client
             socket = new Socket(address, port); 
             System.out.println("Connected"); 
   
-            // takes input from terminal 
-            input  = new DataInputStream(System.in); 
+            // receive ACK from server with input
+            input  = new DataInputStream(socket.getInputStream()); 
   
             // sends output to the socket 
             out    = new DataOutputStream(socket.getOutputStream()); 
         } 
         catch(UnknownHostException u) 
         { 
-            System.out.println(u); 
+            System.err.println(u); 
         } 
         catch(IOException i) 
         { 
-            System.out.println(i); 
+            System.err.println(i); 
         } 
   
-        // string to read message from input 
-        String line = ""; 
+      //Test if that file exists
+    	try {
+    		message = readFileAsString(filename);
+    	}
+    	catch (Exception e) {
+    		System.err.println("That filename does not exist. exiting");
+    		System.exit(1);
+    	}
+    	
+    	List<String> chunks = splitEqually(message, 4);
+    	
+    	int index = 0;
+    	String ACK = "";
   
-        // keep reading until "Over" is input 
-        while (!line.equals("Over")) 
+        // keep reading if ACK comes in
+        while (!END) 
         { 
             try
             { 
-                line = input.readLine(); 
-                out.writeUTF(line); 
+                out.writeUTF(chunks.get(index)); 
             } 
             catch(IOException i) 
             { 
-                 System.out.println(i); 
+                 System.err.println(i); 
             } 
+            
+            //next read ACK
+            try {
+            	ACK = input.readUTF();
+            }
+            catch(IOException i) {
+            	System.err.println(i);
+            }
+            
+            if(ExpectedACK(chunks.get(index), ACK)) {
+            	index++;
+            }
+            else END = !END;
         } 
   
         // close the connection 
@@ -80,28 +111,37 @@ public class client
         }
         return ret;
     }
+    
+    public static Boolean ExpectedACK(String messageSent, String ACK) {
+    	System.out.print("messageSent = " + messageSent + "ACK = " + ACK);
+    	if(messageSent.toUpperCase() != ACK) {
+    		System.err.println("bad ACK, resend packet");
+    		return false;
+    	}
+    	else {
+    		System.out.println(ACK);
+    		return true;
+    	}
+    }
   
     public static void main(String args[]) { 
-    	Scanner input = new Scanner(System.in);
-    	System.out.print("What is the filename of the textfile? ");
-    	String filename = input.next();
-    	String message = "";
-    	
-    	//Test if that file exists
-    	try {
-    		message = readFileAsString(filename);
-    	}
-    	catch (Exception e) {
-    		System.err.println("That filename does not exist. exiting");
-    		System.exit(1);
-    	}
-    	
-    	List<String> chunks = splitEqually(message, 4);
-    	for (int i = 0; i < chunks.size(); i++) {
-    		System.out.println(chunks.get(i));
-    	}
+		/*
+		 * Scanner input = new Scanner(System.in);
+		 * System.out.print("What is the filename of the textfile? "); //TODO remove and
+		 * replace with a command line call String filename = input.next(); String
+		 * message = "";
+		 * 
+		 * //Test if that file exists try { message = readFileAsString(filename); }
+		 * catch (Exception e) {
+		 * System.err.println("That filename does not exist. exiting"); System.exit(1);
+		 * }
+		 * 
+		 * List<String> chunks = splitEqually(message, 4); for (int i = 0; i <
+		 * chunks.size(); i++) { System.out.print(chunks.get(i));
+		 * System.out.println(" length = " + chunks.get(i).length()); }
+		 */
     	
     	
-        //client client = new client("127.0.0.1", 5000); 
+        client client = new client("127.0.0.1", 5000, "test.txt"); 
     } 
 } 
