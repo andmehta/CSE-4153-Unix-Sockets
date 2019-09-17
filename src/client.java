@@ -1,6 +1,6 @@
-// A Java program for a Client 
 import java.net.*; 
 import java.io.*; 
+import java.util.Scanner;
   
 public class client 
 { 
@@ -46,7 +46,7 @@ public class client
             } 
             catch(IOException i) 
             { 
-                System.out.println(i); 
+                 System.out.println(i); 
             } 
         } 
   
@@ -65,6 +65,10 @@ public class client
   
     public static void main(String args[]) 
     { 
-        client client = new client("127.0.0.1", 5000); 
+    	Scanner input = new Scanner(System.in);
+    	System.out.print("What is the filename of the textfile? ");
+    	String filename = input.next();
+    	System.out.println(filename);
+        //client client = new client("127.0.0.1", 5000); 
     } 
 } 
