@@ -1,6 +1,8 @@
 import java.nio.file.*;
 import java.net.*;
-import java.io.*; 
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
   
 public class client 
@@ -69,21 +71,34 @@ public class client
 		data = new String (Files.readAllBytes(Paths.get(filename)));
 		return data;
 	}
+    
+    public static List<String> splitEqually(String text, int size) {
+        List<String> ret = new ArrayList<String>((text.length() + size - 1) / size);
+
+        for (int start = 0; start < text.length(); start += size) {
+            ret.add(text.substring(start, Math.min(text.length(), start + size)));
+        }
+        return ret;
+    }
   
     public static void main(String args[]) { 
     	Scanner input = new Scanner(System.in);
     	System.out.print("What is the filename of the textfile? ");
     	String filename = input.next();
+    	String message = "";
     	
     	//Test if that file exists
     	try {
-    		String output = readFileAsString(filename);
-    		
-    		System.out.println(output); //TODO use something 
+    		message = readFileAsString(filename);
     	}
     	catch (Exception e) {
     		System.err.println("That filename does not exist. exiting");
     		System.exit(1);
+    	}
+    	
+    	List<String> chunks = splitEqually(message, 4);
+    	for (int i = 0; i < chunks.size(); i++) {
+    		System.out.println(chunks.get(i));
     	}
     	
     	
