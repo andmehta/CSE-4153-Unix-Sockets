@@ -6,6 +6,8 @@ The  goal  of  this  assignment  is  to  gain  experience  with  both  TCP  and 
 
 ##goals left in client
 implement call (should read as java client <host1/server address> <n_port> <filename>)
+	Look at [this](https://canvas.msstate.edu/courses/22469/assignments/126620) and look at makefiles
+
 implement handshake (USE TCP)
 implement data chunk sender (USE UDP)
 print ACK
