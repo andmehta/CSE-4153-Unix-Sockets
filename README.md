@@ -12,7 +12,8 @@ The  goal  of  this  assignment  is  to  gain  experience  with  both  TCP  and 
 - [x] implement ACK response (send next payload)
     * ~make sure ACK is proper~ 
     * ~increment `index`~
-- [ ] determine loop exit condition
+    
+- [x] determine loop exit condition
 
 
 ## goals left in server
