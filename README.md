@@ -6,7 +6,7 @@ The  goal  of  this  assignment  is  to  gain  experience  with  both  TCP  and 
 
 ## goals left in client
 - [ ] implement call (should read as `java client <host1/server address> <n_port> <filename>`) **TODO figure out how [makefiles](http://www.henrywowen.com/post.php?p_id=7 "makefile intro") work**
-- [ ] implement handshake (USE TCP)
+- [x] implement handshake (USE TCP)
 - [x] implement data chunk sender (USE UDP)
 - [x] print each ACK 
 - [x] implement ACK response (send next payload)
@@ -18,9 +18,9 @@ The  goal  of  this  assignment  is  to  gain  experience  with  both  TCP  and 
 
 ## goals left in server
 - [ ] implement call (should read as `java server <n_port>`)
-- [ ] implement [random](https://www.geeksforgeeks.org/generating-random-numbers-in-java/ "random number generator") port assignment <r_port> (1024 and 65535 inclusive)
-    * print what random port selected
-    * send that port to client via TCP (ACK of initial handshake)
+- [x] implement [random](https://www.geeksforgeeks.org/generating-random-numbers-in-java/ "random number generator") port assignment <r_port> (1024 and 65535 inclusive)
+    * ~print what random port selected~
+    * ~send that port to client via TCP (ACK of initial handshake)~
 - [x] implement ACK response (capitalize payload and return, USE UDP)
     * ~send payload back and forth~
     * ~implement function that turns payload into all caps, names it `ACK`~
