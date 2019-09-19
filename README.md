@@ -2,16 +2,17 @@
 Project written in Java to demonstrate how to write a Unix socket. 
 
 ## Project description 
-The  goal  of  this  assignment  is  to  gain  experience  with  both  TCP  and  UDP  socket  programming  in  a client-server environment by implementing a file transfer protocol. You will use Java or  ~C++~  (your  choice)  to  design  and  implement  a  client  program  (client)  and  server  program (server) to communicate between themselves. 
+The  goal  of  this  assignment  is  to  gain  experience  with  both  TCP  and  UDP  socket  programming  in  a client-server environment by implementing a file transfer protocol. You will use Java ~or C++~  (your  choice)  to  design  and  implement  a  client  program  (client)  and  server  program (server) to communicate between themselves. 
 
 ## goals left in client
 - [ ] implement call (should read as `java client <host1/server address> <n_port> <filename>`) **TODO figure out how [makefiles](http://www.henrywowen.com/post.php?p_id=7 "makefile intro") work**
 - [ ] implement handshake (USE TCP)
 - [x] implement data chunk sender (USE UDP)
-- [ ] print each ACK *ensure this works with each ACK*
-- [ ] implement ACK response (send next payload)
-    * make sure ACK is proper **TODO ask Maxwell why my function doesn't work**
+- [x] print each ACK 
+- [x] implement ACK response (send next payload)
+    * ~make sure ACK is proper~ 
     * ~increment `index`~
+- [ ] determine loop exit condition
 
 
 ## goals left in server
@@ -25,4 +26,5 @@ The  goal  of  this  assignment  is  to  gain  experience  with  both  TCP  and 
     
 - [x] save each payload into a textfile "dataReceived.txt"
 - [ ] implement check for end of file **TODO come up with better system here**
+   * send final ACK with info stating end of the file
 
