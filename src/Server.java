@@ -4,7 +4,7 @@
  *                 *
  *******************/
 
-import java.net.*;
+import java.net.*; 
 import java.util.Random;
 import java.io.*; 
   
@@ -18,6 +18,7 @@ public class server
 	private DataOutputStream output     = null;
 	
 	//for UDP data transfer
+	private int              UDP_port;
     private DatagramSocket   socket     = null;
     private byte[]           buf        = new byte[256];
     
@@ -27,21 +28,20 @@ public class server
   
     // constructor with port 
     public server(int port) 
-    { 
-        // starts server and waits for a connection 
+    {  
+    	// starts server and waits for a connection 
     	try {
     		tcp_server = new ServerSocket(port);
+    		//System.out.println("waiting on client");
     		tcp_socket = tcp_server.accept();
     		output = new DataOutputStream(tcp_socket.getOutputStream());
-    		
     		input = new DataInputStream(tcp_socket.getInputStream());
     		String line = "";
     		
     		line = input.readUTF();
-    		System.out.println("line = " + line);
     		
-    		int UDP_port = randomPortGenerator();
-    		System.out.println("Selected the random port " + UDP_port);
+    		UDP_port = randomPortGenerator();
+    		System.out.println("Handshake detected. Selected the random port " + UDP_port);
     		output.writeInt(UDP_port);
     		
     		tcp_server.close();
@@ -51,37 +51,53 @@ public class server
     	catch (IOException io){
     		System.err.println(io);
     	}
-		/*
-		 * try { //input.close(); //output.close(); //tcp_socket.close(); } catch
-		 * (IOException io2) { System.err.println(io2); }
-		 */
-		/*
-		 * try { socket = new DatagramSocket(port);
-		 * System.out.println("Server started");
-		 * 
-		 * System.out.println("Waiting for a client ...");
-		 * 
-		 * // reads message from client until TODO implement end of message while
-		 * (running) { try { DatagramPacket packet = new DatagramPacket(buf,
-		 * buf.length); //get the payload from the client socket.receive(packet);
-		 * 
-		 * 
-		 * //change the new packet into a string that we can use String received =
-		 * packetToString(packet);
-		 * 
-		 * System.out.println(received.contentEquals("\nend")); //Check if the payload
-		 * is the end of the file if(received.contentEquals("\nend")) { // TODO need a
-		 * better system here running = false; } else { writeToTextfile(received); }
-		 * //Prepare an ACK of the received payload DatagramPacket ACK =
-		 * packetToACK(packet);
-		 * 
-		 * //send the ACK to the client socket.send(ACK); } catch(IOException i) {
-		 * System.out.println(i); running = false; } }
-		 * System.out.println("Closing server socket");
-		 * 
-		 * // close socket socket.close(); } catch(IOException i) {
-		 * System.out.println(i); }
-		 */ 
+    	
+    	//Now do UDP to send file info
+        try
+        { 
+            socket = new DatagramSocket(UDP_port); 
+            //System.out.println("DatagramSocket started"); 
+  
+            //System.out.println("Waiting for a client ... on port " + UDP_port); 
+  
+            // reads message from client until implement end of message
+            while (running) { 
+                try { 
+                    DatagramPacket packet = new DatagramPacket(buf, buf.length);
+                    //get the payload from the client
+                    socket.receive(packet);
+                    
+                    
+                    //change the new packet into a string that we can use
+                    String received = packetToString(packet);
+                    
+                    //System.out.println(received.contentEquals("\nend"));
+                    //Check if the payload is the end of the file
+                    if(received.contentEquals("\nend")) { // TODO need a better system here
+                    	running = false;
+                    } else {
+                    	writeToTextfile(received);
+                    }
+                    //Prepare an ACK of the received payload
+                    DatagramPacket ACK = packetToACK(packet);
+                    
+                    //send the ACK to the client
+                    socket.send(ACK); 
+                } 
+                catch(IOException i) { 
+                    System.out.println(i); 
+                    running = false;
+                } 
+            } 
+            //System.out.println("Closing server socket"); 
+  
+            // close socket
+            socket.close(); 
+        } 
+        catch(IOException i) 
+        { 
+            System.out.println(i); 
+        } 
     } 
   
     public static String packetToString(DatagramPacket Datagrampacket) {
@@ -127,6 +143,7 @@ public class server
     	Random rand = new Random();
 		return rand.nextInt(64551) + 1024;
     }
+    
     public static void main(String args[]) 
     { 
         server Server = new server(8000); 
