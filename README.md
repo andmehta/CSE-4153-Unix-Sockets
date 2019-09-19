@@ -11,11 +11,17 @@ The  goal  of  this  assignment  is  to  gain  experience  with  both  TCP  and 
 3. implement data chunk sender (USE UDP)
 4. print ACK
 5. implement ACK response (send next payload)
+    * make sure ACK is proper
+    * increment `index`
 
 
 ## goals left in server
 1. implement call (should read as `java server <n_port>`)
 2. implement random port assignment <r_port> (1024 and 65535 inclusive)
 3. implement ACK response (capitalize payload and return, USE UDP) 
+    * ~send payload back and forth~
+    * implement function that turns payload into all caps, names it `ACK`
+    
 4. save each payload into a textfile "dataReceived.txt"
+    * implement check for end of file *newLine?* *"end"?*
 
