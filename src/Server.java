@@ -7,7 +7,7 @@
 import java.net.*; 
 import java.io.*; 
   
-public class Server 
+public class server 
 { 
     //initialize socket and input stream  
     private DatagramSocket  socket   = null; 
@@ -16,7 +16,7 @@ public class Server
     
   
     // constructor with port 
-    public Server(int port) 
+    public server(int port) 
     { 
         // starts server and waits for a connection 
         try
@@ -33,16 +33,17 @@ public class Server
                     //get the payload from the client
                     socket.receive(packet);
                     
+                    
                     //change the new packet into a string that we can use
                     String received = packetToString(packet);
                     
+                    System.out.println(received.contentEquals("\nend"));
                     //Check if the payload is the end of the file
                     if(received.contentEquals("\nend")) { // TODO need a better system here
                     	running = false;
+                    } else {
+                    	writeToTextfile(received);
                     }
-
-                    writeToTextfile(received);
-                    
                     //Prepare an ACK of the received payload
                     DatagramPacket ACK = packetToACK(packet);
                     

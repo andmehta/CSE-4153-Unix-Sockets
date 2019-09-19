@@ -25,6 +25,6 @@ The  goal  of  this  assignment  is  to  gain  experience  with  both  TCP  and 
     * ~implement function that turns payload into all caps, names it `ACK`~
     
 - [x] save each payload into a textfile "dataReceived.txt"
-- [ ] implement check for end of file **TODO come up with better system here**
-   * send final ACK with info stating end of the file
+- [x] implement check for end of file **TODO come up with better system here**
+   * ~send final ACK with info stating end of the file~
 

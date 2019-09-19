@@ -47,6 +47,7 @@ public class client
     			System.exit(1);
     		}
     		try {
+    			System.out.println("packet = " + chunks.get(index));
     			socket.send(packet);
     		} catch (IOException e) {
     			// TODO Auto-generated catch block
@@ -64,7 +65,7 @@ public class client
     			index++;
     		}
     		
-    		if(index == chunks.size() - 1) {
+    		if(index == chunks.size()) {
     			running = false;
     		}
     	}	
@@ -87,6 +88,8 @@ public class client
     public static String readFileAsString(String filename) throws Exception {
 		String data = "";
 		data = new String (Files.readAllBytes(Paths.get(filename)));
+		
+		data = data + "\nend"; //signal end of file
 		return data;
 	}
     
