@@ -1,3 +1,9 @@
+/*******************
+ * Andrew Mehta    *
+ * am3258          *
+ *                 *
+ *******************/
+
 import java.net.*; 
 import java.io.*; 
   
@@ -24,32 +30,33 @@ public class Server
             while (running) { 
                 try { 
                     DatagramPacket packet = new DatagramPacket(buf, buf.length);
+                    //get the payload from the client
                     socket.receive(packet);
                     
-                    InetAddress address = packet.getAddress();
-                    //int port = packet.getPort();
-                    packet = new DatagramPacket(buf, buf.length, address, port);
-                    String received = new String(packet.getData(), 0, packet.getLength());
-                    if(received.contentEquals("end")) {
-                    	running = false;
-                    	continue;
-                    }
+                    //change the new packet into a string that we can use
+                    String received = packetToString(packet);
                     
-                    received = received.toUpperCase();
-                    System.out.println(received);
-                    socket.send(packet);
-                    System.out.println("packet sent");
-                    running = false;
-  
+                    //Check if the payload is the end of the file
+                    if(received.contentEquals("\nend")) {
+                    	running = false;
+                    }
+
+                    writeToTextfile(received);
+                    
+                    //Prepare an ACK of the received payload
+                    DatagramPacket ACK = packetToACK(packet);
+                    
+                    //send the ACK to the client
+                    socket.send(ACK); 
                 } 
                 catch(IOException i) { 
                     System.out.println(i); 
                     running = false;
                 } 
             } 
-            System.out.println("Closing connection"); 
+            System.out.println("Closing server socket"); 
   
-            // close connection 
+            // close socket
             socket.close(); 
         } 
         catch(IOException i) 
@@ -58,6 +65,45 @@ public class Server
         } 
     } 
   
+    public static String packetToString(DatagramPacket Datagrampacket) {
+    	String received = new String(Datagrampacket.getData(), 0, Datagrampacket.getLength());
+    	return received;
+    }
+    
+    public static DatagramPacket packetToACK(DatagramPacket packet) {
+    	String CAPS = packetToString(packet);
+    	CAPS = CAPS.toUpperCase();
+    	
+    	DatagramPacket ACK = null;
+    	byte[] buf = CAPS.getBytes();
+		try {
+			ACK = new DatagramPacket(buf, buf.length, InetAddress.getLocalHost(), packet.getPort());
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+		return ACK;
+    }
+    
+    public static void writeToTextfile(String string) throws IOException {
+    	File dataReceived = new File("dataReceived.txt");
+    	
+    	BufferedWriter writer = new BufferedWriter(new FileWriter("dataReceived.txt", dataReceived.exists()));
+    	
+    	if(!dataReceived.exists()) {
+    		dataReceived = File.createTempFile("dataReceived", ".txt");
+    		writer.write(string);
+    	}
+    	else {
+    		writer.newLine();
+    		writer.append(string);
+    	}
+    	
+    	writer.close();
+    }
+    
     public static void main(String args[]) 
     { 
         Server server = new Server(5000); 

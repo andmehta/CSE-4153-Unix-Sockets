@@ -23,19 +23,20 @@ public class client
     public client(String address, int port, String filename) 
     { 
         // establish a connection 
-            try {
+        try {
 				socket = new DatagramSocket();
 			} catch (SocketException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} 
-            System.out.println("Connected");
-            testFilename(filename);
+     // TODO add handshake here
+        System.out.println("Connected"); 
+        testFilename(filename);
     	
     	List<String> chunks = splitEqually(message, 4);
     	
-    	System.out.println(chunks.get(0));
-    	buf = chunks.get(0).getBytes();
+    	buf = chunks.get(5).getBytes(); // TODO turn this into a function? index 5 = end
+    	
     	DatagramPacket packet = null;
 		try {
 			packet = new DatagramPacket(buf, buf.length, InetAddress.getLocalHost(), port);
@@ -52,16 +53,15 @@ public class client
 		}
     	packet = new DatagramPacket(buf, buf.length);
     	try {
-    		System.out.println("before socket.receive");
 			socket.receive(packet);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    	System.out.println("after socket.receive");
-    	String received = new String(packet.getData(), 0, packet.getLength());
-    	System.out.println(received + " = received");
+    	String received = new String(packet.getData(), 0, packet.getLength()); //TODO turn this into a function
+    	System.out.println("Ack received " + received);
     	
+    	System.out.println("close client socket");
     	socket.close();
     } 
     
@@ -124,5 +124,11 @@ public class client
     	
     	
         client client = new client("127.0.0.1", 5000, "test.txt"); 
+        
+		/* TODO change to this format??
+		 * client.handshake(); 
+		 * client.testFilename("test.txt");
+		 * client.splitEqually(4)
+		 */        
     } 
 } 
