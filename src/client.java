@@ -9,7 +9,6 @@ import java.net.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-//import java.util.Scanner;
   
 public class client 
 { 
@@ -34,32 +33,36 @@ public class client
         testFilename(filename);
     	
     	List<String> chunks = splitEqually(message, 4);
+    	int index = 0;
+    	while(running ) {
+    		buf = chunks.get(index).getBytes(); // TODO turn this into a function? 
     	
-    	buf = chunks.get(5).getBytes(); // TODO turn this into a function? index 5 = end
-    	
-    	DatagramPacket packet = null;
-		try {
-			packet = new DatagramPacket(buf, buf.length, InetAddress.getLocalHost(), port);
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.exit(1);
-		}
-    	try {
-			socket.send(packet);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	packet = new DatagramPacket(buf, buf.length);
-    	try {
-			socket.receive(packet);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	String received = new String(packet.getData(), 0, packet.getLength()); //TODO turn this into a function
-    	System.out.println("Ack received " + received);
+    		//initialize packet
+    		DatagramPacket packet = null;
+    		try {
+    			packet = new DatagramPacket(buf, buf.length, InetAddress.getLocalHost(), port);
+    		} catch (UnknownHostException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    			System.exit(1);
+    		}
+    		try {
+    			socket.send(packet);
+    		} catch (IOException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		}
+    		packet = new DatagramPacket(buf, buf.length);
+    		try {
+    			socket.receive(packet);
+    		} catch (IOException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		}
+    		if(ExpectedACK(chunks.get(index), packetToString(packet))) {
+    			index++;
+    		}
+    	}	
     	
     	System.out.println("close client socket");
     	socket.close();
@@ -91,37 +94,26 @@ public class client
         return ret;
     }
     
-    public static Boolean ExpectedACK(String messageSent, String ACK) {
-    	System.out.print("messageSent = " + messageSent + "ACK = " + ACK);
-    	if(messageSent.toUpperCase() != ACK) {
-    		System.err.println("bad ACK, resend packet");
+    public static Boolean ExpectedACK(String messageSent, String ACK) { 
+    	System.out.print("messageSent = " + messageSent + " ACK = " + ACK);
+    	System.out.println("\nmessageSent.toUpperCase() = " + messageSent.toUpperCase());
+    	if(messageSent.toUpperCase() != ACK) { // TODO figure out why this isn't true
+    		System.err.println("\nbad ACK, resend packet");
     		return false;
     	}
     	else {
     		System.out.println(ACK);
-    		ACK.notify();
     		
     		return true;
     	}
     }
   
+    public static String packetToString(DatagramPacket Datagrampacket) {
+    	String received = new String(Datagrampacket.getData(), 0, Datagrampacket.getLength());
+    	return received;
+    }
+    
     public static void main(String args[]) { 
-		/*
-		 * Scanner input = new Scanner(System.in);
-		 * System.out.print("What is the filename of the textfile? "); //TODO remove and
-		 * replace with a command line call String filename = input.next(); String
-		 * message = "";
-		 * 
-		 * //Test if that file exists try { message = readFileAsString(filename); }
-		 * catch (Exception e) {
-		 * System.err.println("That filename does not exist. exiting"); System.exit(1);
-		 * }
-		 * 
-		 * List<String> chunks = splitEqually(message, 4); for (int i = 0; i <
-		 * chunks.size(); i++) { System.out.print(chunks.get(i));
-		 * System.out.println(" length = " + chunks.get(i).length()); }
-		 */
-    	
     	
         client client = new client("127.0.0.1", 5000, "test.txt"); 
         
