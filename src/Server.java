@@ -3,11 +3,11 @@ import java.io.*;
   
 public class Server 
 { 
-    //initialize socket and input stream 
-    private Socket          socket   = null; 
-    private ServerSocket    server   = null; 
-    private DataInputStream in       = null; 
-    private DataOutputStream out     = null;
+    //initialize socket and input stream  
+    private DatagramSocket  socket   = null; 
+    private Boolean         running  = true;
+    private byte[]          buf      = new byte[256];
+    
   
     // constructor with port 
     public Server(int port) 
@@ -15,40 +15,42 @@ public class Server
         // starts server and waits for a connection 
         try
         { 
-            server = new ServerSocket(port); 
+            socket = new DatagramSocket(port); 
             System.out.println("Server started"); 
   
             System.out.println("Waiting for a client ..."); 
   
-            socket = server.accept(); 
-            System.out.println("Client accepted"); 
-  
-            // takes input from the client socket 
-            in = new DataInputStream( 
-                new BufferedInputStream(socket.getInputStream())); 
-  
-            String line = ""; 
-  
-            // reads message from client until "Over" is sent 
-            while (!line.equals("Over")) 
-            { 
-                try
-                { 
-                    line = in.readUTF(); 
-                    System.out.println(line); //TODO change to write to a file
-                    out.writeUTF(line.toUpperCase());
+            // reads message from client until TODO implement end of message
+            while (running) { 
+                try { 
+                    DatagramPacket packet = new DatagramPacket(buf, buf.length);
+                    socket.receive(packet);
+                    
+                    InetAddress address = packet.getAddress();
+                    //int port = packet.getPort();
+                    packet = new DatagramPacket(buf, buf.length, address, port);
+                    String received = new String(packet.getData(), 0, packet.getLength());
+                    if(received.contentEquals("end")) {
+                    	running = false;
+                    	continue;
+                    }
+                    
+                    received = received.toUpperCase();
+                    System.out.println(received);
+                    socket.send(packet);
+                    System.out.println("packet sent");
+                    running = false;
   
                 } 
-                catch(IOException i) 
-                { 
+                catch(IOException i) { 
                     System.out.println(i); 
+                    running = false;
                 } 
             } 
             System.out.println("Closing connection"); 
   
             // close connection 
             socket.close(); 
-            in.close(); 
         } 
         catch(IOException i) 
         { 

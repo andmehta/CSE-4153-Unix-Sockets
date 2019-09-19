@@ -9,93 +9,72 @@ import java.net.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
+//import java.util.Scanner;
   
 public class client 
 { 
     // initialize socket and input output streams 
-    private Socket socket            = null; 
-    private DataInputStream  input   = null; 
-    private DataOutputStream out     = null; 
+    private DatagramSocket socket    = null;  
     private String message           = "";
-    private Boolean END              = false;
+    private Boolean running          = true;
+    private byte[] buf;
   
     // constructor to put ip address and port 
     public client(String address, int port, String filename) 
     { 
         // establish a connection 
-        try
-        { 
-            socket = new Socket(address, port); 
-            System.out.println("Connected"); 
-  
-            // receive ACK from server with input
-            input  = new DataInputStream(socket.getInputStream()); 
-  
-            // sends output to the socket 
-            out    = new DataOutputStream(socket.getOutputStream()); 
-        } 
-        catch(UnknownHostException u) 
-        { 
-            System.err.println(u); 
-        } 
-        catch(IOException i) 
-        { 
-            System.err.println(i); 
-        } 
-  
-      //Test if that file exists
-    	try {
-    		message = readFileAsString(filename);
-    	}
-    	catch (Exception e) {
-    		System.err.println("That filename does not exist. exiting");
-    		System.exit(1);
-    	}
+            try {
+				socket = new DatagramSocket();
+			} catch (SocketException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+            System.out.println("Connected");
+            testFilename(filename);
     	
     	List<String> chunks = splitEqually(message, 4);
     	
-    	int index = 0;
-    	String ACK = "";
-  
-        // keep reading if ACK comes in
-        while (!END) 
-        { 
-            try
-            { 
-                out.writeUTF(chunks.get(index)); 
-            } 
-            catch(IOException i) 
-            { 
-                 System.err.println(i); 
-            } 
-            
-            //next read ACK
-            try {
-            	ACK = input.readUTF();
-            }
-            catch(IOException i) {
-            	System.err.println(i);
-            }
-            
-            if(ExpectedACK(chunks.get(index), ACK)) {
-            	index++;
-            }
-            else END = !END;
-        } 
-  
-        // close the connection 
-        try
-        { 
-            input.close(); 
-            out.close(); 
-            socket.close(); 
-        } 
-        catch(IOException i) 
-        { 
-            System.out.println(i); 
-        } 
+    	System.out.println(chunks.get(0));
+    	buf = chunks.get(0).getBytes();
+    	DatagramPacket packet = null;
+		try {
+			packet = new DatagramPacket(buf, buf.length, InetAddress.getLocalHost(), port);
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.exit(1);
+		}
+    	try {
+			socket.send(packet);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	packet = new DatagramPacket(buf, buf.length);
+    	try {
+    		System.out.println("before socket.receive");
+			socket.receive(packet);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	System.out.println("after socket.receive");
+    	String received = new String(packet.getData(), 0, packet.getLength());
+    	System.out.println(received + " = received");
+    	
+    	socket.close();
     } 
+    
+    public void testFilename(String filename) {
+        //Test if that file exists
+      	try {
+      		message = readFileAsString(filename);
+      	}
+      	catch (Exception e) {
+      		System.err.println("That filename does not exist. exiting");
+      		System.exit(1);
+      	}
+      }
     
     public static String readFileAsString(String filename) throws Exception {
 		String data = "";
@@ -120,6 +99,8 @@ public class client
     	}
     	else {
     		System.out.println(ACK);
+    		ACK.notify();
+    		
     		return true;
     	}
     }
