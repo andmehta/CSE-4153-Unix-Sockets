@@ -5,26 +5,60 @@
  *******************/
 
 import java.net.*; 
+import java.util.Random;
 import java.io.*; 
   
 public class server 
 { 
-    //initialize socket and input stream  
-    private DatagramSocket  socket   = null; 
-    private Boolean         running  = true;
-    private byte[]          buf      = new byte[256];
-    
-  
+	//initialize socket and input stream  
+		//For TCP handshake
+		private Socket           tcp_socket = null;
+		private ServerSocket     tcp_server = null;
+		private DataInputStream  input      = null;
+		private DataOutputStream output     = null;
+		
+		//for UDP data transfer
+		private int              UDP_port;
+	    private DatagramSocket   socket     = null;
+	    private byte[]           buf        = new byte[256];
+	    
+	    //for Running the server
+	    private Boolean          running    = true;
     // constructor with port 
     public server(int port) 
     { 
-        // starts server and waits for a connection 
+    	// starts server and waits for a connection 
+    	try {
+    		tcp_server = new ServerSocket(port);
+    		//System.out.println("waiting on client");
+    		tcp_socket = tcp_server.accept();
+    		output = new DataOutputStream(tcp_socket.getOutputStream());
+    		
+    		input = new DataInputStream(tcp_socket.getInputStream());
+    		String line = "";
+    		
+    		line = input.readUTF();
+    		//System.out.println("line = " + line);
+    		
+    		UDP_port = randomPortGenerator();
+    		System.out.println("Handshake detected. Selected the random port " + UDP_port);
+    		output.writeInt(UDP_port);
+    		
+    		tcp_server.close();
+    		output.close();
+    		input.close();
+    	}
+    	catch (IOException io){
+    		System.err.println(io);
+    	}
+    	
+    	//Now do UDP to send file info
         try
         { 
-            socket = new DatagramSocket(port); 
-            System.out.println("Server started"); 
+            socket = new DatagramSocket(UDP_port); 
+            //System.out.println("DatagramSocket started"); 
   
-            System.out.println("Waiting for a client ..."); 
+            //System.out.println("Waiting for a client ... on port " + UDP_port); 
   
             // reads message from client until TODO implement end of message
             while (running) { 
@@ -37,7 +71,7 @@ public class server
                     //change the new packet into a string that we can use
                     String received = packetToString(packet);
                     
-                    System.out.println(received.contentEquals("\nend"));
+                    //System.out.println(received.contentEquals("\nend"));
                     //Check if the payload is the end of the file
                     if(received.contentEquals("\nend")) { // TODO need a better system here
                     	running = false;
@@ -55,7 +89,7 @@ public class server
                     running = false;
                 } 
             } 
-            System.out.println("Closing server socket"); 
+            //System.out.println("Closing server socket"); 
   
             // close socket
             socket.close(); 
@@ -105,8 +139,13 @@ public class server
     	writer.close();
     }
     
+    public static int randomPortGenerator() {
+    	Random rand = new Random();
+		return rand.nextInt(64551) + 1024;
+    }
+    
     public static void main(String args[]) 
     { 
-        Server server = new Server(5000); 
+        server Server = new server(8000); 
     } 
 } 
