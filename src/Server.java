@@ -37,7 +37,7 @@ public class Server
                     String received = packetToString(packet);
                     
                     //Check if the payload is the end of the file
-                    if(received.contentEquals("\nend")) {
+                    if(received.contentEquals("\nend")) { // TODO need a better system here
                     	running = false;
                     }
 

@@ -34,7 +34,7 @@ public class client
     	
     	List<String> chunks = splitEqually(message, 4);
     	int index = 0;
-    	while(running ) {
+    	while(running) {
     		buf = chunks.get(index).getBytes(); // TODO turn this into a function? 
     	
     		//initialize packet
@@ -59,8 +59,13 @@ public class client
     			// TODO Auto-generated catch block
     			e.printStackTrace();
     		}
+    		
     		if(ExpectedACK(chunks.get(index), packetToString(packet))) {
     			index++;
+    		}
+    		
+    		if(index == chunks.size() - 1) {
+    			running = false;
     		}
     	}	
     	
@@ -95,16 +100,15 @@ public class client
     }
     
     public static Boolean ExpectedACK(String messageSent, String ACK) { 
-    	System.out.print("messageSent = " + messageSent + " ACK = " + ACK);
-    	System.out.println("\nmessageSent.toUpperCase() = " + messageSent.toUpperCase());
-    	if(messageSent.toUpperCase() != ACK) { // TODO figure out why this isn't true
-    		System.err.println("\nbad ACK, resend packet");
-    		return false;
+		//System.out.print("ACK = " + ACK);
+    	//System.out.println("\nmessageSent.toUpperCase() = " + messageSent.toUpperCase());
+    	if(messageSent.toUpperCase().equals(ACK)) { // TODO figure out why this isn't true
+    		System.out.println(ACK);
+    		return true;
     	}
     	else {
-    		System.out.println(ACK);
-    		
-    		return true;
+    		System.err.println("bad ACK, resend packet");
+    		return false;
     	}
     }
   
