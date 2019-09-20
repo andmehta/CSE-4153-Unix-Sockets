@@ -1,12 +1,12 @@
 # CSE-4153-Unix-Sockets
-Project written in Java to demonstrate how to write a Unix socket. 
+Project written in Java to demonstrate how to write a Unix socket.  **TODO make file won't work because file name is Server.java. IT MUST BE _server.java_ in order for the makefile to function**
 
 ## Project description 
 The  goal  of  this  assignment  is  to  gain  experience  with  both  TCP  and  UDP  socket  programming  in  a client-server environment by implementing a file transfer protocol. You will use Java ~or C++~  (your  choice)  to  design  and  implement  a  client  program  (client)  and  server  program (server) to communicate between themselves. 
 
 ## goals left in client
 - [x] implement call (should read as `java client <host1/server address> <n_port> <filename>`) 
-- [ ] **TODO figure out how [makefiles](http://www.henrywowen.com/post.php?p_id=7 "makefile intro") work**
+- [x] figure out how [makefiles](http://www.henrywowen.com/post.php?p_id=7 "makefile intro") work
 - [x] implement handshake (USE TCP)
 - [x] implement data chunk sender (USE UDP)
 - [x] print each ACK 
