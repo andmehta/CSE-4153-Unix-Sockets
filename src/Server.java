@@ -27,11 +27,12 @@ public class server
     
   
     // constructor with port 
-    public server(int port) 
+    public server(String port) 
     {  
+    	int intPort = Integer.parseInt(port);
     	// starts server and waits for a connection 
     	try {
-    		tcp_server = new ServerSocket(port);
+    		tcp_server = new ServerSocket(intPort);
     		//System.out.println("waiting on client");
     		tcp_socket = tcp_server.accept();
     		output = new DataOutputStream(tcp_socket.getOutputStream());
@@ -146,6 +147,6 @@ public class server
     
     public static void main(String args[]) 
     { 
-        server Server = new server(8000); 
+        server Server = new server(args[0]); 
     } 
 } 

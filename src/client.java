@@ -27,11 +27,12 @@ public class client
 	    private Boolean running          = true;
   
     // constructor to put ip address and port 
-    public client(String address, int port, String filename) 
+    public client(String address, String port, String filename) 
     { 
+    	int intPort = Integer.parseInt(port);
     	//TCP handshake
     	try {
-    		tcp_socket = new Socket(address, port);
+    		tcp_socket = new Socket(address, intPort);
     		input = new DataInputStream(tcp_socket.getInputStream());
     		output = new DataOutputStream(tcp_socket.getOutputStream());
     		
@@ -152,7 +153,9 @@ public class client
     
     public static void main(String args[]) { 
     	
-        client Client = new client("127.0.0.1", 8000, "test.txt"); 
+        //client Client = new client("127.0.0.1", 8000, "test.txt"); 
+    	
+    	client Client = new client(args[0], args[1], args[2]); 
 
         
 		/* TODO change to this format??
