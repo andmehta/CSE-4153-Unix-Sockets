@@ -121,7 +121,6 @@ public class client
 		String data = "";
 		data = new String (Files.readAllBytes(Paths.get(filename)));
 		
-		data = data + "\nend"; //signal end of file
 		return data;
 	}
     
@@ -131,6 +130,8 @@ public class client
         for (int start = 0; start < text.length(); start += size) {
             ret.add(text.substring(start, Math.min(text.length(), start + size)));
         }
+        
+        ret.add("/nend");
         return ret;
     }
     
